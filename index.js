@@ -5,17 +5,17 @@ const app = require("./src/app");
 const PORT = process.env.PORT || 3000;
 
 const connection = require("./src/utils/db");
-const { setupBullBoard } = require("./src/utils/bullBoard");
+// const { setupBullBoard } = require("./src/utils/bullBoard");
 
 connection(process.env.MONGO_URI)
   .then((response) => {
     app.listen(PORT, () => {
       console.log("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
-      setupBullBoard();
+      // setupBullBoard();
       console.log(`Server running on port ${PORT}`);
       console.log("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
     });
   })
   .catch((error) => {
-    console.log("Error starting an application");
+    console.log("Error starting an application", error);
   });

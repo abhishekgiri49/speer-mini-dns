@@ -37,7 +37,7 @@ exports.addRecord = async ({ type, hostname, value, ttl }) => {
 
     const newRecord = new DnsRecord({ type, hostname, value, ttl });
     await newRecord.save();
-    await redis.del(hostname);
+    // await redis.del(hostname);
     queueLog(hostname, newRecord).catch(console.error);
     return { status: 201, data: newRecord };
   } catch (err) {
@@ -54,10 +54,10 @@ exports.resolveHostname = async (hostname) => {
     let current = hostname;
     const cnameChain = [];
 
-    const cachedData = await redis.get(hostname);
-    if (cachedData) {
-      return { status: 200, data: { ...JSON.parse(cachedData), cached: true } };
-    }
+    // const cachedData = await redis.get(hostname);
+    // if (cachedData) {
+    //   return { status: 200, data: { ...JSON.parse(cachedData), cached: true } };
+    // }
 
     while (true) {
       if (visited.has(current))
@@ -86,7 +86,7 @@ exports.resolveHostname = async (hostname) => {
           cnameChain.length > 0 ? cnameChain[cnameChain.length - 1] : undefined,
       };
 
-      await redis.setEx(hostname, 300, JSON.stringify(result));
+      // await redis.setEx(hostname, 300, JSON.stringify(result));
 
       queueLog(
         hostname,
@@ -126,7 +126,7 @@ exports.deleteRecord = async ({ hostname, type, value }) => {
   try {
     const result = await DnsRecord.findOneAndDelete({ hostname, type, value });
     if (!result) return { status: 404, data: { error: "Record not found" } };
-    await redis.del(hostname);
+    // await redis.del(hostname);
     queueLog(hostname, result).catch(console.error);
     return { status: 200, data: { message: "Record deleted successfully" } };
   } catch (err) {

@@ -4,7 +4,7 @@ const Redis = require("ioredis");
 const DnsQueryLog = require("../models/DnsQueryLog");
 const dbConnection = require("../utils/db");
 
-const connection = new Redis(process.env.REDIS_URL, {
+const connection = new Redis(`${process.env.REDIS_URL}`, {
   maxRetriesPerRequest: null,
 });
 const worker = new Worker(
