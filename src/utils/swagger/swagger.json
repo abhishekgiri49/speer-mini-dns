@@ -1,0 +1,97 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mini DNS API",
+    "version": "1.0.0",
+    "description": "API for managing A and CNAME DNS records"
+  },
+  "paths": {
+    "/api/dns": {
+      "post": {
+        "summary": "Add DNS Record",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string" },
+                  "hostname": { "type": "string" },
+                  "value": { "type": "string" },
+                  "ttl": { "type": "integer" }
+                },
+                "required": ["type", "hostname", "value"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Record created" },
+          "409": { "description": "Conflict or duplicate" }
+        }
+      }
+    },
+    "/api/dns/{hostname}": {
+      "get": {
+        "summary": "Resolve Hostname",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Resolved IPs" },
+          "404": { "description": "Not found" }
+        }
+      },
+      "delete": {
+        "summary": "Delete DNS Record",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "value",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Record deleted" },
+          "404": { "description": "Not found" }
+        }
+      }
+    },
+    "/api/dns/{hostname}/records": {
+      "get": {
+        "summary": "List Records",
+        "parameters": [
+          {
+            "name": "hostname",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "List of records" },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  }
+}

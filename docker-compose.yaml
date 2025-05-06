@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PORT=${REDIS_PORT}
+      - PORT=${PORT}
+    volumes:
+      - mongo_data:/data/app
+    depends_on:
+      - mongo
+      - redis
+    restart: always
+    networks:
+      - dnsnet
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    env_file:
+      - .env
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PORT=${REDIS_PORT}
+      - QUEUE_PORT=${QUEUE_PORT}
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - mongo_data:/data/worker
+    restart: always
+    networks:
+      - dnsnet
+
+  mongo:
+    image: mongo
+    container_name: mongo-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+    networks:
+      - dnsnet
+
+  redis:
+    image: redis
+    container_name: redis-db
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    restart: always
+    networks:
+      - dnsnet
+
+volumes:
+  mongo_data:
+
+networks:
+  dnsnet:
+    driver: bridge
